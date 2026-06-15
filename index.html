@@ -119,7 +119,7 @@
       <div class="row" style="gap:18px">
         <label class="opt-toggle"><input type="checkbox" id="shuffleQ" checked> Shuffle questions</label>
         <label class="opt-toggle"><input type="checkbox" id="shuffleA" checked> Shuffle answers</label>
-        <label class="opt-toggle"><input type="checkbox" id="instant"> Instant feedback</label>
+        <label class="opt-toggle"><input type="checkbox" id="instant" checked> Instant feedback (grade each answer right away)</label>
       </div>
     </div>
     <div class="row" style="margin-top:16px">
@@ -276,7 +276,7 @@
     });
     graded = false;
     updateProgress();
-    $("#submitBtn").textContent = "Submit & grade";
+    $("#submitBtn").textContent = instant ? "Finish & see results" : "Submit & grade";
     $("#submitBtn").disabled = false;
   }
 
