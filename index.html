@@ -96,7 +96,7 @@
 <header>
   <div class="wrap">
     <h1>Midterm 3 — Practice Test</h1>
-    <div class="sub">Bones &amp; Skeletal System · Joints · Muscular System (Weeks 7–11) — 150 questions. Keep retaking the ones you miss until every answer is correct.</div>
+    <div class="sub">Two exams to choose from. Keep retaking the ones you miss until every answer is correct.</div>
   </div>
 </header>
 
@@ -104,15 +104,17 @@
 
   <!-- Setup -->
   <div class="card" id="setup">
+    <div class="row" style="gap:18px;margin-bottom:14px">
+      <label class="muted" for="examSel">Exam:</label>
+      <select id="examSel">
+        <option value="standard">Standard Midterm — 150 MCQ (bones · joints · muscles)</option>
+        <option value="functional">Functional Exam — 100 applied physiology Qs</option>
+      </select>
+    </div>
     <div class="row" style="justify-content:space-between">
       <div class="row">
         <label class="muted" for="sectionSel">Topic:</label>
-        <select id="sectionSel">
-          <option value="all">All 150</option>
-          <option value="Bones">Bones (1–60)</option>
-          <option value="Joints">Joints (61–90)</option>
-          <option value="Muscles">Muscles (91–150)</option>
-        </select>
+        <select id="sectionSel"></select>
       </div>
       <div class="row" style="gap:18px">
         <label class="opt-toggle"><input type="checkbox" id="shuffleQ" checked> Shuffle questions</label>
@@ -150,9 +152,18 @@
 </div>
 
 <script src="questions.js"></script>
+<script src="functional.js"></script>
 <script>
 (function(){
-  const ALL = QUESTIONS;
+  const BANKS = {
+    standard: { data: QUESTIONS, label: "All 150",
+      sections: [["Bones","Bones (Q1–60)"],["Joints","Joints (Q61–90)"],["Muscles","Muscles (Q91–150)"]] },
+    functional: { data: FUNCTIONAL, label: "All 100",
+      sections: [["Homeostasis & Chemistry","Homeostasis & Chemistry"],["Cells & Transport","Cells & Transport"],
+                 ["Tissues","Tissues"],["Integumentary","Integumentary"],["Bones","Bones"],
+                 ["Joints","Joints"],["Muscles","Muscles"],["Nervous System","Nervous System"]] },
+  };
+  let ALL = QUESTIONS;    // active bank data
   let pool = [];          // current working set (array of question objects, possibly with shuffled option order)
   let round = 1;
   let instant = false;
@@ -175,7 +186,7 @@
 
   // Build a renderable item from a base question, applying answer shuffle if requested
   function makeItem(q, shuffleA){
-    let order = [0,1,2,3,4,5];
+    let order = q.options.map((_,i)=>i);
     if(shuffleA) order = shuffle(order);
     return {
       base:q,
@@ -185,9 +196,26 @@
     };
   }
 
+  function populateTopics(){
+    const bank = BANKS[$("#examSel").value];
+    ALL = bank.data;
+    const sel = $("#sectionSel");
+    sel.innerHTML = "";
+    const optAll = document.createElement("option");
+    optAll.value = "all"; optAll.textContent = bank.label;
+    sel.appendChild(optAll);
+    bank.sections.forEach(([val,lbl])=>{
+      const o = document.createElement("option");
+      o.value = val;
+      o.textContent = lbl + " (" + ALL.filter(q=>q.section===val).length + ")";
+      sel.appendChild(o);
+    });
+    startCount();
+  }
+
   function startCount(){
     const sec = $("#sectionSel").value;
-    const n = sec==="all" ? ALL.length : ALL.filter(q=>q.section===sec).length;
+    const n = (sec==="all" || !sec) ? ALL.length : ALL.filter(q=>q.section===sec).length;
     $("#startCount").textContent = n + " questions selected";
   }
 
@@ -388,7 +416,8 @@
   $("#submitBtn").addEventListener("click", submit);
   $("#resetBtn").addEventListener("click", resetToSetup);
   $("#sectionSel").addEventListener("change", startCount);
-  startCount();
+  $("#examSel").addEventListener("change", populateTopics);
+  populateTopics();
 })();
 </script>
 </body>
