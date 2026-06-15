@@ -250,7 +250,7 @@
 
       const text = document.createElement("div");
       text.className = "q-text";
-      text.textContent = item._displayNum ? item._displayNum+". "+q.text : q.text;
+      text.textContent = q.text;
       card.appendChild(text);
 
       const ul = document.createElement("ul");
@@ -293,12 +293,12 @@
     if(radio) radio.checked = true;
 
     if(instant){
-      gradeOne(idx, true);
+      gradeOne(idx);
     }
     updateProgress();
   }
 
-  function gradeOne(idx, lockOnly){
+  function gradeOne(idx){
     const item = pool[idx];
     const card = $("#q"+idx);
     const correctPos = item.answerDisp;
